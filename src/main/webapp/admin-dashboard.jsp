@@ -157,8 +157,7 @@
 
             <div class="election-actions">
                 <% if (e.getStatus() == Election.Status.UPCOMING) { %>
-                    <form method="post" action="${pageContext.request.contextPath}/admin/dashboard"
-                          style="display: inline;">
+                    <form method="post" action="${pageContext.request.contextPath}/admin/dashboard" style="display: inline;">
                         <input type="hidden" name="action"     value="updateStatus">
                         <input type="hidden" name="electionId" value="<%= e.getId() %>">
                         <input type="hidden" name="status"     value="ACTIVE">

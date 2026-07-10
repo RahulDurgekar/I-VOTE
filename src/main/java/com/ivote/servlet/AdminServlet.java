@@ -21,9 +21,9 @@ import java.util.UUID;
 @WebServlet({"/admin", "/admin/*"})
 public class AdminServlet extends HttpServlet {
 
-    private final ElectionDAO electionDAO = new ElectionDAOImpl();
-    private final VoteDAO     voteDAO     = new VoteDAOImpl();
-    private final UserDAO     userDAO     = new UserDAOImpl();
+    private final ElectionDAO electionDAO= new ElectionDAOImpl();
+    private final VoteDAO voteDAO= new VoteDAOImpl();
+    private final UserDAO userDAO= new UserDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)

@@ -24,6 +24,7 @@
       <a href="${pageContext.request.contextPath}/about">About</a>
       <a href="${pageContext.request.contextPath}/contact">Contact</a>
     </div>
+    
     <div class="navbar-actions">
       <% if (loggedIn) { %>
         <span class="nav-user-name"><%= user.getName() %></span>
@@ -32,7 +33,9 @@
         <a href="${pageContext.request.contextPath}/login" class="btn btn-ghost btn-sm">Sign in</a>
         <a href="${pageContext.request.contextPath}/register" class="btn btn-primary btn-sm">Register</a>
       <% } %>
+      
     </div>
+    
   </div>
 </nav>
 
@@ -122,7 +125,7 @@
       <a href="${pageContext.request.contextPath}/contact">Contact</a>
       <% if (loggedIn) { %><a href="${pageContext.request.contextPath}/profile">Profile</a><% } %>
     </div>
-    <p class="footer-copy">&copy; 2025 I-VOTE. All rights reserved.</p>
+    <p class="footer-copy">&copy; 2026 I-VOTE. All rights reserved.</p>
   </div>
 </footer>
 </body>
