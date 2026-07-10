@@ -13,6 +13,7 @@ USE `jdbc-db`;
 -- ----------------------------------------------------------------
 -- Drop tables in reverse FK order (safe re-run)
 -- ----------------------------------------------------------------
+
 DROP TABLE IF EXISTS votes;
 DROP TABLE IF EXISTS candidates;
 DROP TABLE IF EXISTS elections;
@@ -73,9 +74,8 @@ CREATE TABLE candidates (
 
 -- ----------------------------------------------------------------
 -- VOTES
--- UNIQUE(voter_id, election_id)    — one vote per account per election
+-- UNIQUE(voter_id, election_id)   — one vote per account per election
 -- UNIQUE(voter_phone, election_id) — one vote per phone per election
--- voter_phone is stored (not FK) so it can be updated when user changes phone
 -- ----------------------------------------------------------------
 CREATE TABLE votes (
   id           INT       AUTO_INCREMENT PRIMARY KEY,

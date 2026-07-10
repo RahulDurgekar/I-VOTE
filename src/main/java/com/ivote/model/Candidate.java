@@ -17,11 +17,20 @@ public class Candidate {
 
     public Candidate() {}
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() { 
+    	return id; 
+    	}
+    public void setId(int id) { 
+    	this.id = id; 
+    }
 
-    public int getUserId() { return userId; }
-    public void setUserId(int userId) { this.userId = userId; }
+    public int getUserId() { 
+    	return userId; 
+    	}
+    
+    public void setUserId(int userId) { 
+    	this.userId = userId; 
+    	}
 
     public int getElectionId() { return electionId; }
     public void setElectionId(int electionId) { this.electionId = electionId; }

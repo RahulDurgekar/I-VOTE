@@ -32,6 +32,7 @@ public class CandidateDAOImpl implements CandidateDAO {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return mapRow(rs);
+            
         } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
