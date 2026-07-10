@@ -36,7 +36,8 @@
                 <input type="password" id="password" name="password" class="form-control"
                        placeholder="Enter your password" required autocomplete="current-password">
             </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center;">
                 Sign In
             </button>
         </form>

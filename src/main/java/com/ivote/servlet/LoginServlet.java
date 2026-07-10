@@ -1,4 +1,4 @@
-package com.ivote.controller;
+package com.ivote.servlet;
 
 import com.ivote.dao.UserDAO;
 import com.ivote.dao.impl.UserDAOImpl;
@@ -23,7 +23,7 @@ public class LoginServlet extends HttpServlet {
             redirectByRole((User) session.getAttribute("user"), req, resp);
             return;
         }
-        req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+        req.getRequestDispatcher("/login.jsp").forward(req, resp);
     }
 
     @Override
@@ -34,14 +34,14 @@ public class LoginServlet extends HttpServlet {
 
         if (email == null || password == null || email.isBlank() || password.isBlank()) {
             req.setAttribute("error", "Email and password are required.");
-            req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
             return;
         }
 
         User user = userDAO.findByEmailAndPassword(email.trim(), password);
         if (user == null) {
             req.setAttribute("error", "Invalid email or password.");
-            req.getRequestDispatcher("/WEB-INF/views/login.jsp").forward(req, resp);
+            req.getRequestDispatcher("/login.jsp").forward(req, resp);
             return;
         }
 
@@ -51,11 +51,12 @@ public class LoginServlet extends HttpServlet {
         redirectByRole(user, req, resp);
     }
 
-    private void redirectByRole(User user, HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void redirectByRole(User user, HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
         if (user.getRole() == User.Role.ADMIN) {
             resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
         } else {
-            resp.sendRedirect(req.getContextPath() + "/dashboard");
+            resp.sendRedirect(req.getContextPath() + "/dashboard/home");
         }
     }
 }

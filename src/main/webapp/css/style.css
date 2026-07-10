@@ -360,6 +360,31 @@ footer { background: var(--paper); border-top: 1px solid var(--fog); margin-top:
 .footer-links a:hover { color: var(--violet); }
 .footer-copy { font-size: 13px; color: var(--steel); width: 100%; text-align: center; margin-top: 8px; }
 
+/* HOW TO USE STEPS */
+.how-to-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--fog);
+}
+.how-to-step:last-child { border-bottom: none; }
+.step-number {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--violet);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+}
+.how-to-step strong { display: block; font-size: 15px; color: var(--ink); margin-bottom: 4px; }
+.how-to-step p      { font-size: 14px; color: var(--slate); line-height: 1.5; margin: 0; }
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .navbar-links { display: none; }

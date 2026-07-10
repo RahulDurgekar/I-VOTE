@@ -1,10 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.ivote.model.*,java.util.*" %>
 <%
-    User           user         = (User)      session.getAttribute("user");
-    Election       election     = (Election)  request.getAttribute("election");
-    List<Candidate> candidates  = (List<Candidate>) request.getAttribute("candidates");
-    List<Candidate> results     = (List<Candidate>) request.getAttribute("results");
+    User            user         = (User)      session.getAttribute("user");
+    Election        election     = (Election)  request.getAttribute("election");
+    List<Candidate> candidates   = (List<Candidate>) request.getAttribute("candidates");
+    List<Candidate> results      = (List<Candidate>) request.getAttribute("results");
     Boolean hasVoted      = (Boolean) request.getAttribute("hasVoted");
     Boolean hasPhoneVoted = (Boolean) request.getAttribute("hasPhoneVoted");
     Boolean isCandidate   = (Boolean) request.getAttribute("isCandidate");
@@ -27,11 +27,11 @@
 
 <nav class="navbar">
     <div class="navbar-inner">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/dashboard">
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/dashboard/home">
             I<span class="dot">-VOTE</span>
         </a>
         <div class="navbar-links">
-            <a href="${pageContext.request.contextPath}/dashboard">Dashboard</a>
+            <a href="${pageContext.request.contextPath}/dashboard/home">Dashboard</a>
             <a href="${pageContext.request.contextPath}/about">About</a>
             <a href="${pageContext.request.contextPath}/contact">Contact</a>
         </div>
@@ -39,7 +39,8 @@
             <span class="nav-user-name"><%= user.getName() %></span>
             <a href="${pageContext.request.contextPath}/profile">
                 <% if (hasPic) { %>
-                    <img src="${pageContext.request.contextPath}/profile/photo" class="avatar-sm" alt="avatar">
+                    <img src="${pageContext.request.contextPath}/profile/photo"
+                         class="avatar-sm" alt="avatar">
                 <% } else { %>
                     <div class="avatar-placeholder"><%= initial %></div>
                 <% } %>
@@ -51,14 +52,15 @@
 
 <div class="page-wrap">
 
-    <a href="${pageContext.request.contextPath}/dashboard" class="btn btn-ghost btn-sm"
-       style="margin-bottom: 20px;">Back to Dashboard</a>
+    <a href="${pageContext.request.contextPath}/dashboard/home"
+       class="btn btn-ghost btn-sm" style="margin-bottom: 20px;">
+        Back to Dashboard
+    </a>
 
     <% if (election == null) { %>
         <div class="alert alert-error">Election not found.</div>
     <% } else { %>
 
-    <%-- ELECTION HEADER --%>
     <div class="card" style="margin-bottom: 24px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start;
                     flex-wrap: wrap; gap: 12px;">
@@ -67,7 +69,9 @@
                     <h1 style="font-size: 24px; font-weight: 700; color: var(--ink);">
                         <%= election.getTitle() %>
                     </h1>
-                    <span class="badge badge-<%= election.getStatus() %>"><%= election.getStatus() %></span>
+                    <span class="badge badge-<%= election.getStatus() %>">
+                        <%= election.getStatus() %>
+                    </span>
                 </div>
                 <p style="font-size: 14px; color: var(--slate);">
                     <%= election.getDescription() != null ? election.getDescription() : "" %>
@@ -89,7 +93,6 @@
         </div>
     </div>
 
-    <%-- ALERTS --%>
     <% if ("true".equals(request.getParameter("voted"))) { %>
         <div class="alert alert-success">Your vote has been recorded successfully.</div>
     <% } else if ("already_voted".equals(request.getParameter("error"))
@@ -105,16 +108,15 @@
         <div class="alert alert-success">You are now registered as a candidate. Good luck!</div>
     <% } %>
 
-    <%-- TWO COLUMN LAYOUT --%>
     <div style="display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start;">
 
-        <%-- LEFT: VOTE PANEL + CANDIDATE REGISTRATION --%>
         <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
 
-            <%-- VOTE PANEL --%>
             <div class="card">
                 <div class="card-title">Cast Your Vote</div>
-                <div class="card-subtitle">Select a candidate below and submit your vote. You can only vote once.</div>
+                <div class="card-subtitle">
+                    Select a candidate below and submit your vote. You can only vote once.
+                </div>
 
                 <% if (voted) { %>
                     <div class="alert alert-info" style="margin-bottom: 0;">
@@ -133,14 +135,16 @@
                         No candidates have registered yet.
                     </div>
                 <% } else { %>
-                    <form method="post" action="${pageContext.request.contextPath}/dashboard/election"
+                    <form method="post"
+                          action="${pageContext.request.contextPath}/dashboard/election"
                           id="voteForm">
-                        <input type="hidden" name="action"      value="vote">
+                        <input type="hidden" name="action"       value="vote">
                         <input type="hidden" name="electionCode" value="<%= code %>">
-                        <input type="hidden" name="candidateId" id="selectedCandidate" value="">
+                        <input type="hidden" name="candidateId"  id="selectedCandidate" value="">
                         <div class="candidates-grid">
                             <% for (Candidate c : candidates) { %>
-                            <div class="candidate-card" onclick="selectCandidate(<%= c.getId() %>, this)">
+                            <div class="candidate-card"
+                                 onclick="selectCandidate(<%= c.getId() %>, this)">
                                 <% if (c.getProfilePic() != null && c.getProfilePic().length > 0) { %>
                                     <img src="${pageContext.request.contextPath}/candidatePhoto?id=<%= c.getId() %>"
                                          class="candidate-photo" alt="<%= c.getUserName() %>">
@@ -157,8 +161,7 @@
                             </div>
                             <% } %>
                         </div>
-                        <button type="submit" id="voteBtn" disabled
-                                class="btn btn-primary"
+                        <button type="submit" id="voteBtn" disabled class="btn btn-primary"
                                 style="width: 100%; justify-content: center; margin-top: 20px;">
                             Submit Vote
                         </button>
@@ -166,11 +169,12 @@
                 <% } %>
             </div>
 
-            <%-- CANDIDATE REGISTRATION --%>
             <% if (Boolean.TRUE.equals(isCandidate)) { %>
                 <div class="card">
                     <div class="card-title">Registered as Candidate</div>
-                    <div class="card-subtitle">You are participating in this election as a candidate.</div>
+                    <div class="card-subtitle">
+                        You are participating in this election as a candidate.
+                    </div>
                 </div>
             <% } else if (election.getStatus() == Election.Status.UPCOMING) { %>
                 <div class="card">
@@ -187,7 +191,6 @@
 
         </div>
 
-        <%-- RIGHT: RESULTS --%>
         <div class="card" style="flex: 1; min-width: 280px;">
             <div class="card-title">
                 <% if (election.getStatus() == Election.Status.CLOSED) { %>
@@ -223,7 +226,8 @@
                             <%= c.getUserName() %>
                             <% if (first && totalVotes > 0) { %>
                                 <span class="winner-badge">
-                                    <%= election.getStatus() == Election.Status.CLOSED ? "Winner" : "Leading" %>
+                                    <%= election.getStatus() == Election.Status.CLOSED
+                                        ? "Winner" : "Leading" %>
                                 </span>
                             <% } %>
                         </span>
@@ -249,12 +253,12 @@
     <% } %>
 </div>
 
-<%-- CANDIDATE REGISTER MODAL --%>
 <div class="modal-overlay" id="candidateModal"
      onclick="if(event.target === this) this.classList.remove('active')">
     <div class="modal">
         <h3 class="modal-title">Register as Candidate</h3>
-        <form method="post" action="${pageContext.request.contextPath}/dashboard/election"
+        <form method="post"
+              action="${pageContext.request.contextPath}/dashboard/election"
               enctype="multipart/form-data">
             <input type="hidden" name="action"       value="joinCandidate">
             <input type="hidden" name="electionCode" value="<%= code %>">
@@ -282,7 +286,7 @@
 
 <script>
     function selectCandidate(id, el) {
-        document.querySelectorAll(".candidate-card").forEach(function(c) {
+        document.querySelectorAll(".candidate-card").forEach(function (c) {
             c.classList.remove("selected");
         });
         el.classList.add("selected");

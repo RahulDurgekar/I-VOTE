@@ -1,8 +1,8 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.ivote.model.*,java.util.*" %>
 <%
-    User   admin     = (User) session.getAttribute("user");
-    List<Election> elections = (List<Election>) request.getAttribute("elections");
+    User           admin      = (User) session.getAttribute("user");
+    List<Election> elections  = (List<Election>) request.getAttribute("elections");
     long activeCount   = elections != null ? elections.stream().filter(e -> e.getStatus() == Election.Status.ACTIVE).count()   : 0;
     long upcomingCount = elections != null ? elections.stream().filter(e -> e.getStatus() == Election.Status.UPCOMING).count() : 0;
     long closedCount   = elections != null ? elections.stream().filter(e -> e.getStatus() == Election.Status.CLOSED).count()   : 0;
@@ -62,7 +62,6 @@
         <div class="alert alert-error"><%= request.getAttribute("profileError") %></div>
     <% } %>
 
-    <%-- STATS --%>
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-number"><%= elections != null ? elections.size() : 0 %></div>
@@ -82,10 +81,11 @@
         </div>
     </div>
 
-    <%-- UNIVERSITY PROFILE CARD --%>
     <div class="card" style="margin-bottom: 28px;">
         <div class="card-title">Institution Details</div>
-        <div class="card-subtitle">Update your university name and location. This appears on all your elections.</div>
+        <div class="card-subtitle">
+            Update your university name and location. This appears on all your elections.
+        </div>
         <form method="post" action="${pageContext.request.contextPath}/admin/dashboard">
             <input type="hidden" name="action" value="updateUniversity">
             <div class="form-row">
@@ -106,7 +106,6 @@
         </form>
     </div>
 
-    <%-- ELECTIONS LIST --%>
     <div class="section-header">
         <span class="section-title">My Elections</span>
         <button class="btn btn-primary"
@@ -144,14 +143,14 @@
                 <% } %>
             </div>
 
-            <%-- ELECTION CODE + COPY BUTTON --%>
             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px;">
-                <span>Code:</span>
-                <span class="election-code" id="code-<%= e.getId() %>"><%= e.getElectionCode() %></span>
+                <span style="font-size: 13px; color: var(--slate);">Code:</span>
+                <span class="election-code"><%= e.getElectionCode() %></span>
                 <button type="button" class="btn btn-outline-violet btn-sm"
-                        onclick="copyElectionMessage('<%= e.getId() %>', '<%= e.getElectionCode() %>',
-                                 '<%= e.getTitle().replace("'", "\\'") %>',
-                                 '<%= e.getInstitutionName().replace("'", "\\'") %>')">
+                        onclick="copyElectionMessage(
+                            '<%= e.getElectionCode() %>',
+                            '<%= e.getTitle().replace("'", "\\'") %>',
+                            '<%= e.getInstitutionName().replace("'", "\\'") %>')">
                     Copy Invite Message
                 </button>
             </div>
@@ -166,13 +165,14 @@
                         <button class="btn btn-primary btn-sm" type="submit">Activate</button>
                     </form>
                     <button class="btn btn-ghost btn-sm"
-                            onclick="openEditModal(<%= e.getId() %>,
-                                     '<%= e.getTitle().replace("'", "\\'") %>',
-                                     '<%= e.getDescription() != null ? e.getDescription().replace("'","\\'"): "" %>',
-                                     '<%= e.getInstitutionName().replace("'", "\\'") %>',
-                                     '<%= e.getStartTime().toString().replace(" ","T").substring(0,16) %>',
-                                     '<%= e.getEndTime().toString().replace(" ","T").substring(0,16) %>',
-                                     '<%= e.getCandidateRegistrationDeadline() != null ? e.getCandidateRegistrationDeadline().toString().replace(" ","T").substring(0,16) : "" %>')">
+                            onclick="openEditModal(
+                                <%= e.getId() %>,
+                                '<%= e.getTitle().replace("'", "\\'") %>',
+                                '<%= e.getDescription() != null ? e.getDescription().replace("'", "\\'") : "" %>',
+                                '<%= e.getInstitutionName().replace("'", "\\'") %>',
+                                '<%= e.getStartTime().toString().replace(" ", "T").substring(0, 16) %>',
+                                '<%= e.getEndTime().toString().replace(" ", "T").substring(0, 16) %>',
+                                '<%= e.getCandidateRegistrationDeadline() != null ? e.getCandidateRegistrationDeadline().toString().replace(" ", "T").substring(0, 16) : "" %>')">
                         Edit
                     </button>
                 <% } else if (e.getStatus() == Election.Status.ACTIVE) { %>
@@ -190,7 +190,7 @@
 
                 <form method="post" action="${pageContext.request.contextPath}/admin/dashboard"
                       style="display: inline;"
-                      onsubmit="return confirm('Delete this election? This action cannot be undone.');">
+                      onsubmit="return confirm('Delete this election? This cannot be undone.');">
                     <input type="hidden" name="action"     value="delete">
                     <input type="hidden" name="electionId" value="<%= e.getId() %>">
                     <button class="btn btn-danger btn-sm" type="submit">Delete</button>
@@ -203,7 +203,7 @@
 
 </div>
 
-<%-- CREATE ELECTION MODAL --%>
+<%-- CREATE MODAL --%>
 <div class="modal-overlay" id="createModal"
      onclick="if(event.target === this) this.classList.remove('active')">
     <div class="modal">
@@ -218,9 +218,8 @@
             <div class="form-group">
                 <label class="form-label">Institution Name *</label>
                 <input type="text" name="institutionName" class="form-control"
-                       placeholder="e.g. ABC University"
                        value="<%= admin.getUniversityName() != null ? admin.getUniversityName() : "" %>"
-                       required>
+                       placeholder="e.g. ABC University" required>
             </div>
             <div class="form-group">
                 <label class="form-label">Description</label>
@@ -240,9 +239,7 @@
             <div class="form-group">
                 <label class="form-label">Candidate Registration Deadline</label>
                 <input type="datetime-local" name="candidateDeadline" class="form-control">
-                <p class="form-hint">
-                    Last date and time by which candidates can register. Leave blank if no deadline.
-                </p>
+                <p class="form-hint">Leave blank if there is no deadline for candidate registration.</p>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-ghost"
@@ -255,7 +252,7 @@
     </div>
 </div>
 
-<%-- EDIT ELECTION MODAL --%>
+<%-- EDIT MODAL --%>
 <div class="modal-overlay" id="editModal"
      onclick="if(event.target === this) this.classList.remove('active')">
     <div class="modal">
@@ -300,12 +297,9 @@
     </div>
 </div>
 
-<%-- COPY SUCCESS TOAST --%>
-<div id="copyToast" style="
-    display: none; position: fixed; bottom: 28px; right: 28px;
-    background: #166534; color: #fff; padding: 12px 20px;
-    border-radius: 10px; font-size: 14px; z-index: 999;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
+<div id="copyToast" style="display: none; position: fixed; bottom: 28px; right: 28px;
+     background: #166534; color: #fff; padding: 12px 20px; border-radius: 10px;
+     font-size: 14px; z-index: 999; box-shadow: 0 4px 16px rgba(0,0,0,0.15);">
     Invite message copied to clipboard.
 </div>
 
@@ -321,24 +315,24 @@
         document.getElementById("editModal").classList.add("active");
     }
 
-    function copyElectionMessage(id, code, title, institution) {
+    function copyElectionMessage(code, title, institution) {
         var message = "You are invited to participate in the election:\n\n"
                     + "Election: " + title + "\n"
                     + "Institution: " + institution + "\n\n"
-                    + "Use the code below to search and join the election on I-VOTE:\n\n"
+                    + "Use the code below to join on I-VOTE:\n\n"
                     + "Election Code: " + code + "\n\n"
                     + "Steps:\n"
                     + "1. Go to the I-VOTE website and log in or register.\n"
                     + "2. On the dashboard, enter the election code: " + code + "\n"
                     + "3. Choose to register as a Candidate or vote for a Candidate.\n\n"
-                    + "Voting is secure and each person can vote only once.";
+                    + "Voting is secure. Each person can vote only once.";
 
         navigator.clipboard.writeText(message).then(function () {
             var toast = document.getElementById("copyToast");
             toast.style.display = "block";
             setTimeout(function () { toast.style.display = "none"; }, 3000);
         }).catch(function () {
-            alert("Election Code: " + code + "\n\nCopy this code and share it with participants.");
+            alert("Election Code: " + code + "\n\nShare this code with participants.");
         });
     }
 </script>

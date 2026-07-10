@@ -1,4 +1,4 @@
-package com.ivote.controller;
+package com.ivote.servlet;
 
 import com.ivote.dao.*;
 import com.ivote.dao.impl.*;
@@ -11,20 +11,13 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
-/**
- * Central hub for logged-in users.
- * GET  /dashboard          — shows search form + joined elections
- * POST /dashboard/search   — search election by code
- * POST /dashboard/join     — join as VOTER or CANDIDATE
- * POST /dashboard/vote     — cast a vote
- */
-@WebServlet("/dashboard/*")
+@WebServlet({"/dashboard", "/dashboard/*"})
 @MultipartConfig(maxFileSize = 2 * 1024 * 1024)
 public class DashboardServlet extends HttpServlet {
 
-    private final ElectionDAO electionDAO     = new ElectionDAOImpl();
-    private final CandidateDAO candidateDAO   = new CandidateDAOImpl();
-    private final VoteDAO voteDAO             = new VoteDAOImpl();
+    private final ElectionDAO  electionDAO  = new ElectionDAOImpl();
+    private final CandidateDAO candidateDAO = new CandidateDAOImpl();
+    private final VoteDAO      voteDAO      = new VoteDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -33,42 +26,47 @@ public class DashboardServlet extends HttpServlet {
         if (user == null) return;
 
         String path = req.getPathInfo();
-        if (path == null || path.equals("/")) path = "/home";
-
-        switch (path) {
-            case "/home" -> {
-                req.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
-            }
-            case "/election" -> {
-                String code = req.getParameter("code");
-                if (code == null || code.isBlank()) {
-                    resp.sendRedirect(req.getContextPath() + "/dashboard/home");
-                    return;
-                }
-                Election election = electionDAO.findByCode(code.trim().toUpperCase());
-                if (election == null) {
-                    req.setAttribute("searchError", "No election found with that code.");
-                    req.getRequestDispatcher("/WEB-INF/views/dashboard.jsp").forward(req, resp);
-                    return;
-                }
-                req.setAttribute("election", election);
-                req.setAttribute("candidates", candidateDAO.getCandidatesByElection(election.getId()));
-                req.setAttribute("results", voteDAO.getResults(election.getId()));
-                req.setAttribute("hasVoted", voteDAO.hasVoted(user.getId(), election.getId()));
-                req.setAttribute("hasPhoneVoted", voteDAO.hasPhoneVoted(user.getPhone(), election.getId()));
-                req.setAttribute("isCandidate", candidateDAO.isAlreadyRegistered(user.getId(), election.getId()));
-                req.getRequestDispatcher("/WEB-INF/views/election-detail.jsp").forward(req, resp);
-            }
-            case "/results" -> {
-                String idParam = req.getParameter("electionId");
-                if (idParam == null) { resp.sendRedirect(req.getContextPath() + "/dashboard/home"); return; }
-                int electionId = Integer.parseInt(idParam);
-                req.setAttribute("election", electionDAO.findById(electionId));
-                req.setAttribute("results", voteDAO.getResults(electionId));
-                req.getRequestDispatcher("/WEB-INF/views/results.jsp").forward(req, resp);
-            }
-            default -> resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+        if (path == null || path.equals("/") || path.equals("/home")) {
+            req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+            return;
         }
+
+        if (path.equals("/election")) {
+            String code = req.getParameter("code");
+            if (code == null || code.isBlank()) {
+                resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+                return;
+            }
+            Election election = electionDAO.findByCode(code.trim().toUpperCase());
+            if (election == null) {
+                req.setAttribute("searchError", "No election found with that code. Please check and try again.");
+                req.getRequestDispatcher("/dashboard.jsp").forward(req, resp);
+                return;
+            }
+            req.setAttribute("election",      election);
+            req.setAttribute("candidates",    candidateDAO.getCandidatesByElection(election.getId()));
+            req.setAttribute("results",       voteDAO.getResults(election.getId()));
+            req.setAttribute("hasVoted",      voteDAO.hasVoted(user.getId(), election.getId()));
+            req.setAttribute("hasPhoneVoted", voteDAO.hasPhoneVoted(user.getPhone(), election.getId()));
+            req.setAttribute("isCandidate",   candidateDAO.isAlreadyRegistered(user.getId(), election.getId()));
+            req.getRequestDispatcher("/election-detail.jsp").forward(req, resp);
+            return;
+        }
+
+        if (path.equals("/results")) {
+            String idParam = req.getParameter("electionId");
+            if (idParam == null) {
+                resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+                return;
+            }
+            int electionId = Integer.parseInt(idParam);
+            req.setAttribute("election", electionDAO.findById(electionId));
+            req.setAttribute("results",  voteDAO.getResults(electionId));
+            req.getRequestDispatcher("/results.jsp").forward(req, resp);
+            return;
+        }
+
+        resp.sendRedirect(req.getContextPath() + "/dashboard/home");
     }
 
     @Override
@@ -78,12 +76,15 @@ public class DashboardServlet extends HttpServlet {
         if (user == null) return;
 
         String action = req.getParameter("action");
-        if (action == null) { resp.sendRedirect(req.getContextPath() + "/dashboard/home"); return; }
+        if (action == null) {
+            resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+            return;
+        }
 
         switch (action) {
-            case "joinCandidate" -> handleJoinCandidate(req, resp, user);
-            case "vote"          -> handleVote(req, resp, user);
-            default              -> resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+            case "joinCandidate": handleJoinCandidate(req, resp, user); break;
+            case "vote":          handleVote(req, resp, user);          break;
+            default:              resp.sendRedirect(req.getContextPath() + "/dashboard/home");
         }
     }
 
@@ -93,7 +94,10 @@ public class DashboardServlet extends HttpServlet {
         String manifesto    = req.getParameter("manifesto");
         Election election   = electionDAO.findByCode(electionCode);
 
-        if (election == null) { resp.sendRedirect(req.getContextPath() + "/dashboard/home"); return; }
+        if (election == null) {
+            resp.sendRedirect(req.getContextPath() + "/dashboard/home");
+            return;
+        }
         if (election.getStatus() != Election.Status.UPCOMING) {
             resp.sendRedirect(req.getContextPath() + "/dashboard/election?code=" + electionCode + "&error=reg_closed");
             return;
@@ -125,6 +129,7 @@ public class DashboardServlet extends HttpServlet {
             throws IOException {
         String electionCode     = req.getParameter("electionCode");
         String candidateIdParam = req.getParameter("candidateId");
+
         if (electionCode == null || candidateIdParam == null) {
             resp.sendRedirect(req.getContextPath() + "/dashboard/home");
             return;

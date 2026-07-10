@@ -44,15 +44,17 @@
 
             <div class="form-group">
                 <label class="form-label" for="role">Register As</label>
-                <select id="role" name="role" class="form-control" required onchange="toggleUniversityFields()">
+                <select id="role" name="role" class="form-control" required
+                        onchange="toggleUniversityFields()">
                     <option value="">-- Select your role --</option>
-                    <option value="USER">User (Voter / Candidate)</option>
-                    <option value="ADMIN">Admin (Institution / University)</option>
+                    <option value="USER">User (Voter or Candidate)</option>
+                    <option value="ADMIN">Admin (University or Institution)</option>
                 </select>
-                <p class="form-hint">Select Admin if you are an institution representative who will create elections.</p>
+                <p class="form-hint">
+                    Select Admin if you represent a university or institution and will create elections.
+                </p>
             </div>
 
-            <%-- University fields shown only when Admin is selected --%>
             <div id="universityFields" style="display: none;">
                 <div class="form-group">
                     <label class="form-label" for="universityName">University / Institution Name</label>
@@ -79,9 +81,11 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center;">
+            <button type="submit" class="btn btn-primary"
+                    style="width: 100%; justify-content: center;">
                 Create Account
             </button>
+
         </form>
 
         <div class="auth-footer">
@@ -93,10 +97,9 @@
 
 <script>
     function toggleUniversityFields() {
-        var role = document.getElementById("role").value;
+        var role   = document.getElementById("role").value;
         var fields = document.getElementById("universityFields");
         var uniName = document.getElementById("universityName");
-        var uniLoc  = document.getElementById("universityLocation");
 
         if (role === "ADMIN") {
             fields.style.display = "block";
@@ -104,7 +107,6 @@
         } else {
             fields.style.display = "none";
             uniName.required = false;
-            uniLoc.required  = false;
         }
     }
 </script>

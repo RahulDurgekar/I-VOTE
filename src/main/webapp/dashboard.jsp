@@ -1,10 +1,10 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="com.ivote.model.User" %>
 <%
-    User   user     = (User) session.getAttribute("user");
-    String userName = user != null ? user.getName() : "";
-    char   initial  = userName.length() > 0 ? Character.toUpperCase(userName.charAt(0)) : 'U';
-    boolean hasPic  = user != null && user.getProfilePic() != null && user.getProfilePic().length > 0;
+    User    user     = (User) session.getAttribute("user");
+    String  userName = user != null ? user.getName() : "";
+    char    initial  = userName.length() > 0 ? Character.toUpperCase(userName.charAt(0)) : 'U';
+    boolean hasPic   = user != null && user.getProfilePic() != null && user.getProfilePic().length > 0;
 %>
 <!DOCTYPE html>
 <html lang="en">
@@ -18,11 +18,11 @@
 
 <nav class="navbar">
     <div class="navbar-inner">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/dashboard">
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/dashboard/home">
             I<span class="dot">-VOTE</span>
         </a>
         <div class="navbar-links">
-            <a href="${pageContext.request.contextPath}/dashboard">Dashboard</a>
+            <a href="${pageContext.request.contextPath}/dashboard/home">Dashboard</a>
             <a href="${pageContext.request.contextPath}/about">About</a>
             <a href="${pageContext.request.contextPath}/contact">Contact</a>
         </div>
@@ -30,24 +30,30 @@
             <span class="nav-user-name"><%= userName %></span>
             <a href="${pageContext.request.contextPath}/profile">
                 <% if (hasPic) { %>
-                    <img src="${pageContext.request.contextPath}/profile/photo" class="avatar-sm" alt="avatar">
+                    <img src="${pageContext.request.contextPath}/profile/photo"
+                         class="avatar-sm" alt="avatar">
                 <% } else { %>
                     <div class="avatar-placeholder"><%= initial %></div>
                 <% } %>
             </a>
-            <a href="${pageContext.request.contextPath}/logout" class="btn btn-ghost btn-sm">Sign Out</a>
+            <a href="${pageContext.request.contextPath}/logout" class="btn btn-ghost btn-sm">
+                Sign Out
+            </a>
         </div>
     </div>
 </nav>
 
 <div class="page-wrap">
 
-    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+    <div class="page-header"
+         style="display: flex; justify-content: space-between; align-items: flex-start;
+                flex-wrap: wrap; gap: 12px;">
         <div>
             <h1>Welcome, <%= userName %></h1>
             <p>Enter an election code to participate as a voter or candidate.</p>
         </div>
-        <button class="btn btn-outline-violet" onclick="document.getElementById('howToModal').classList.add('active')">
+        <button class="btn btn-outline-violet"
+                onclick="document.getElementById('howToModal').classList.add('active')">
             How to Use
         </button>
     </div>
@@ -56,7 +62,6 @@
         <div class="alert alert-error"><%= request.getAttribute("searchError") %></div>
     <% } %>
 
-    <%-- ELECTION CODE SEARCH --%>
     <form action="${pageContext.request.contextPath}/dashboard/election" method="get">
         <div class="search-bar">
             <div class="form-group">
@@ -70,30 +75,29 @@
         </div>
     </form>
 
-    <%-- INFO CARDS --%>
     <div class="features-grid" style="margin-top: 0;">
         <div class="feature-card">
             <div class="feature-title">Enter Code to Participate</div>
             <div class="feature-desc">
-                Get the unique election code from your institution admin and enter it above to find your election.
+                Get the unique election code from your institution admin and enter it above.
             </div>
         </div>
         <div class="feature-card">
             <div class="feature-title">Register as Candidate</div>
             <div class="feature-desc">
-                Once you find an election, you can register as a candidate with your manifesto and a profile photo.
+                Once you find an election, register as a candidate with your manifesto and photo.
             </div>
         </div>
         <div class="feature-card">
             <div class="feature-title">Live Results</div>
             <div class="feature-desc">
-                Track real-time vote counts and see who is leading as votes come in during the election.
+                Track real-time vote counts and see who is leading as votes come in.
             </div>
         </div>
         <div class="feature-card">
             <div class="feature-title">One Vote Per Person</div>
             <div class="feature-desc">
-                The system ensures one vote per person per election using both your account and phone number.
+                The system ensures one vote per person per election using your account and phone number.
             </div>
         </div>
     </div>
@@ -118,17 +122,16 @@
     <div class="modal" style="max-width: 600px;">
         <h3 class="modal-title">How to Use I-VOTE</h3>
 
-        <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
 
             <div class="how-to-step">
                 <div class="step-number">1</div>
                 <div>
                     <strong>Register an Account</strong>
                     <p>
-                        Go to the Register page and create your account. Select your role:
-                        choose <em>User</em> if you want to vote or stand as a candidate,
-                        or choose <em>Admin</em> if you are an institution representative
-                        who will create and manage elections.
+                        Go to the Register page. Select your role: choose User if you want to vote
+                        or stand as a candidate, or choose Admin if you are an institution
+                        representative who will create and manage elections.
                     </p>
                 </div>
             </div>
@@ -138,10 +141,10 @@
                 <div>
                     <strong>Admin: Create an Election</strong>
                     <p>
-                        After logging in as Admin, go to your dashboard and click
-                        "New Election". Fill in the election title, institution name,
-                        start and end dates, and an optional candidate registration deadline.
-                        The system will automatically generate a unique 8-character election code.
+                        After logging in as Admin, click New Election on your dashboard.
+                        Fill in the election title, institution name, start and end dates,
+                        and an optional candidate registration deadline.
+                        The system generates a unique 8-character election code automatically.
                     </p>
                 </div>
             </div>
@@ -151,10 +154,9 @@
                 <div>
                     <strong>Admin: Share the Election Code</strong>
                     <p>
-                        On your election card, click "Copy Invite Message". This copies a
-                        ready-to-send message with the election code and instructions.
-                        Share this message with your students or participants via WhatsApp,
-                        email, or any other channel.
+                        On your election card, click Copy Invite Message. This copies a
+                        ready-to-send message with the election code and step-by-step instructions.
+                        Share it with students via WhatsApp, email, or any channel.
                     </p>
                 </div>
             </div>
@@ -164,8 +166,8 @@
                 <div>
                     <strong>User: Find the Election</strong>
                     <p>
-                        Log in to I-VOTE and enter the election code you received on the
-                        dashboard search bar. Click "Find Election" to open the election page.
+                        Log in and enter the election code you received in the search bar above.
+                        Click Find Election to open the election page.
                     </p>
                 </div>
             </div>
@@ -175,11 +177,10 @@
                 <div>
                     <strong>User: Register as Candidate or Vote</strong>
                     <p>
-                        On the election page, if the election is in <em>Upcoming</em> status,
-                        you can register as a candidate by clicking "Register as Candidate"
-                        and submitting your manifesto and photo.
-                        Once the election is <em>Active</em>, select a candidate card and
-                        click "Submit Vote". You can only vote once per election.
+                        If the election is Upcoming, you can register as a candidate by clicking
+                        Register as Candidate and submitting your manifesto and photo.
+                        Once the election is Active, select a candidate and click Submit Vote.
+                        You can only vote once per election.
                     </p>
                 </div>
             </div>
@@ -190,8 +191,7 @@
                     <strong>View Results</strong>
                     <p>
                         Live vote counts are visible on the election page at all times.
-                        Once the admin closes the election, the final winner is announced
-                        on the results page.
+                        Once the admin closes the election, the final winner is announced.
                     </p>
                 </div>
             </div>

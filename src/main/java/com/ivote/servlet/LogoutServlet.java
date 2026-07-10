@@ -1,4 +1,4 @@
-package com.ivote.controller;
+package com.ivote.servlet;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
